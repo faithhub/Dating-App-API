@@ -1,0 +1,31 @@
+{
+  "name": "dating-app-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faithhub/Dating-App-API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faithhub/Dating-App-API/issues"
+  },
+  "homepage": "https://github.com/faithhub/Dating-App-API#readme",
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "randomstring": "^1.2.3",
+    "sequelize": "^6.25.5",
+    "socket.io": "^4.5.3"
+  }
+}
