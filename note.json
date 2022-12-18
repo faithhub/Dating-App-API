@@ -1,0 +1,53 @@
+[
+  {
+    "register": "",
+    "phone": "89797889",
+    "password": "pass@123",
+    "email": "email",
+    "reg-code": "3456",
+    "name": "Oluwadara",
+    "dob": "12/3/2022",
+    "gender": "Male",
+    "account_purpose": "Flexing/Dating",
+    "interests": "['music', 'movie', 'book']",
+    "profile_pics": "",
+    "location": "",
+    "logitude": "",
+    "latitude": "",
+    "distance_preference": "",
+    "sub_plan": "",
+    "user_unbothered": "",
+    "page_unborthered": ""
+  },
+  {
+    "login": "",
+    "phone": "89797889",
+    "password": "pass@123"
+  },
+  {
+    "post": "",
+    "postId": "798687",
+    "picture": "",
+    "tag": ""
+  },
+  {
+    "post_like": "",
+    "userId": "345"
+  },
+  {
+    "notInterested": "",
+    "userId": "7686"
+  },
+  {
+    "plans": "",
+    "name": "",
+    "amount": ""
+  },
+  {
+    "billing_history": "",
+    "plan_id": "",
+    "amount": "",
+    "date": "",
+    "transId": ""
+  }
+]
