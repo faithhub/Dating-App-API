@@ -15,6 +15,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", routes);
 // console.log(today, generateApiKey({ method: "uuidv4", dashes: false }));
+
+app.use("/", function (req, res, next) {
+  res.status(200).json({
+    message: "It's working now",
+  });
+});
+
 app.use((req, res, next) => {
   const error = new Error("Page not found");
   res.status(error.status || 500);
@@ -25,11 +32,6 @@ app.use((req, res, next) => {
   });
 });
 
-app.use("/", function (req, res, next) {
-  res.status(200).json({
-    message: "It's working now",
-  });
-});
 
 const port = process.env.PORT || 8000;
 
