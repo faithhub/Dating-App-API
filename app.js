@@ -6,7 +6,6 @@ const server = require("http").createServer(app);
 const routes = require("./src/routes");
 const generateApiKey = require("generate-api-key").default;
 const { sequelize } = require("./src/db/sequelize");
-
 app.use(morgan("dev"));
 
 app.use(cors());
@@ -16,11 +15,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", routes);
 // console.log(today, generateApiKey({ method: "uuidv4", dashes: false }));
 
-app.use("/", function (req, res, next) {
-  res.status(200).json({
-    message: "It's working now",
-  });
-});
+// app.use("/", function (req, res, next) {
+//   res.status(200).json({
+//     message: "It's working now",
+//   });
+// });
 
 app.use((req, res, next) => {
   const error = new Error("Page not found");
@@ -32,8 +31,7 @@ app.use((req, res, next) => {
   });
 });
 
-
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 
 server.listen(port, function () {
   console.log("I'm listening on port %s", port);

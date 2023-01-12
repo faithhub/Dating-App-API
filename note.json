@@ -51,3 +51,5 @@
     "transId": ""
   }
 ]
+
+npx sequelize-cli model:generate --name Plan --attributes name:string,amount:string,userType:string

@@ -2,16 +2,12 @@ const { User } = require("../db/sequelize");
 const config = require("../db/config/config.json");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const twilioVerify = require("../ultis/twilio/verifyPhone");
 
 async function hashIt(password) {
   const salt = await bcrypt.genSalt(6);
   const hashed = await bcrypt.hash(password, salt);
   return hashed;
-}
-
-async function compareIt(password, hashedPassword) {
-  const validPassword = await bcrypt.compare(password, hashedPassword);
-  return validPassword;
 }
 
 async function login(req, res) {
@@ -20,8 +16,6 @@ async function login(req, res) {
 
     const user = await User.findOne({
       where: { phone },
-      raw: true,
-      nest: true,
     });
 
     if (!user) {
@@ -30,22 +24,21 @@ async function login(req, res) {
       });
     }
 
-    const checkPassword = await compareIt(password, user.password);
-
-    if (!checkPassword) {
+    if (!user.validPassword(password)) {
       return res.status(400).json({
         message: "Invalid credentials",
       });
     }
 
-    const token = jwt.sign({ sub: user.phone }, config.secret, {
+    const token = jwt.sign({ sub: user.phone, id: user.id }, config.secret, {
       expiresIn: "7d",
     });
 
-    delete user.password;
-    res.status(200).json({
+    delete user.dataValues.password;
+    return res.status(200).json({
       message: "User logged in successfully",
-      data: { ...user, token },
+      // user: data,
+      data: { ...user.dataValues, token },
     });
   } catch (error) {
     return res.status(400).json({
@@ -57,7 +50,7 @@ async function login(req, res) {
 
 async function register(req, res) {
   try {
-    const { phone } = req.body;
+    const { phone, password } = req.body;
 
     const checkPhone = await User.count({
       where: { phone },
@@ -69,7 +62,7 @@ async function register(req, res) {
       });
     }
 
-    const password = await hashIt(req.body.password);
+    // const password = await hashIt(req.body.password);
     const createUser = await User.create({ phone, password });
 
     if (!createUser) {
@@ -80,7 +73,6 @@ async function register(req, res) {
 
     return res.status(200).json({
       message: "User created successfully",
-      data: createUser,
     });
   } catch (error) {
     return res.status(400).json({
@@ -90,4 +82,45 @@ async function register(req, res) {
   }
 }
 
-module.exports = { login, register };
+async function sendCode(req, res) {
+  try {
+    const { phone } = req.body;
+
+    const sendCode = await twilioVerify.sendCode(phone);
+
+    return res.status(200).json({
+      message: "Code sent",
+      data: sendCode,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "An error occur",
+      error: error.message,
+    });
+  }
+}
+
+async function verifyCode(req, res) {
+  try {
+    const { phone, code } = req.body;
+
+    const verifyCode = await twilioVerify.verifyCode(phone, code);
+
+    if (!verifyCode) {
+      return res.status(400).json({
+        message: "Invalid Code",
+      });
+    }
+    return res.status(200).json({
+      message: "Code Verified",
+      data: verifyCode,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "An error occur",
+      error: error.message,
+    });
+  }
+}
+
+module.exports = { login, register, sendCode, verifyCode };

@@ -1,7 +1,11 @@
 "use strict";
 const { Model } = require("sequelize");
+const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    validPassword(password) {
+      return bcrypt.compareSync(password, this.password);
+    }
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -27,7 +31,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM,
         values: ["Male", "Female"],
       },
-      interests: DataTypes.ARRAY(DataTypes.STRING),
+      interests: {
+        type: DataTypes.ARRAY(DataTypes.TEXT),
+        defaultValue: [],
+      },
       account_purpose: {
         type: DataTypes.ENUM,
         values: ["Flexing", "Dating"],
@@ -44,6 +51,26 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "User",
+      timestamps: true,
+      hooks: {
+        beforeCreate: (user) => {
+          const saltRounds = 10;
+          user.salt = bcrypt.genSaltSync(saltRounds);
+          user.password = bcrypt.hashSync(user.password, user.salt);
+        },
+      },
+    },
+    {
+      // defaultScope: {
+      //   attributes: { exclude: ["password"] },
+      // },
+      // scopes: {
+      //   withoutPassword: {
+      //     attributes: {
+      //       exclude: ["password"],
+      //     },
+      //   },
+      // },
     }
   );
   return User;

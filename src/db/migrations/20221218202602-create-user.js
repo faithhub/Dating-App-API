@@ -38,7 +38,7 @@ module.exports = {
         values: ["Male", "Female"],
       },
       interests: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
+        type: Sequelize.TEXT,
       },
       account_purpose: {
         type: Sequelize.ENUM,

@@ -67,3 +67,39 @@ exports.validateLogin = [
     next();
   },
 ];
+
+exports.validatePhone = [
+  check("phone")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Phone number can not be empty!")
+    .bail()
+    .isNumeric()
+    .withMessage("Only numbers are allowed!")
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ errors: errors.array() });
+    next();
+  },
+];
+
+exports.validateCode = [
+  check("code")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Code can not be empty!")
+    .bail()
+    .isNumeric()
+    .withMessage("Only numbers are allowed!")
+    .bail(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(422).json({ errors: errors.array() });
+    next();
+  },
+];
