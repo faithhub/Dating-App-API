@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "root",
-    "database": "dating-app",
+    "database": "dating-app2",
     "host": "localhost",
     "port": "8889",
     "dialect": "mysql"

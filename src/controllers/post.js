@@ -109,6 +109,7 @@ async function create(req, res) {
       include: [
         {
           model: Image,
+          as: "image",
           attributes: ["url"],
         },
       ],
