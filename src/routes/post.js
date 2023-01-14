@@ -9,18 +9,16 @@ const multer = require("multer");
 const upload = multer();
 const uploadFile = require("../middlewares/upload");
 
-router.route("/").get(api, auth, postController.getPosts);
+router.route("/").get(auth, postController.getPosts);
 
-router.route("/:id").get(api, auth, postController.getPost);
+router.route("/:id").get(auth, postController.getPost);
 
-router.route("/:id").delete(api, auth, postController.deletePost);
+router.route("/:id").delete(auth, postController.deletePost);
 
-router.route("/like/:id").get(api, auth, postController.likePost);
+router.route("/:id/:type").get(auth, postController.likeUnlikePost);
 
-router.route("/unlike").get(api, auth, postController.likePost);
+// router.route("/unlike").get(auth, postController.likePost);
 
-router
-  .route("/")
-  .post(api, auth, createPost, uploadFile, postController.create);
+router.route("/").post(auth, createPost, uploadFile, postController.create);
 
 module.exports = router;

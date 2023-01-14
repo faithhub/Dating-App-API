@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
   Friend.init(
     {
       userId: DataTypes.INTEGER,
-      posterId: DataTypes.INTEGER,
+      likeId: DataTypes.INTEGER,
+      isMatched: {
+        type: DataTypes.INTEGER,
+        defaultValue: false,
+      },
       roomId: DataTypes.INTEGER,
     },
     {

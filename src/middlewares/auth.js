@@ -18,9 +18,18 @@ module.exports = async function api(req, res, next) {
 
     if (!verifyToken) {
       return res.status(403).json({
-        message: "Invalid token",
+        message: "Invalid auth token",
       });
     }
+
+    const user = await User.findOne({ where: { id: verifyToken.id } });
+
+    if (!user) {
+      return res.status(403).json({
+        message: "Invalid auth token",
+      });
+    }
+
     req.user = verifyToken;
     return next();
   } catch (e) {

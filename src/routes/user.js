@@ -5,12 +5,12 @@ const express = require("express");
 const router = express.Router();
 const { validatePassword } = require("../services/validations/user");
 
-router.route("/").get(api, auth, userController.profile);
+router.route("/").get(auth, userController.profile);
 
-router.route("/").patch(api, auth, userController.updateProfile);
+router.route("/").patch(auth, userController.updateProfile);
 
 router
   .route("/password")
-  .patch(api, auth, validatePassword, userController.updatePassword);
+  .patch(auth, validatePassword, userController.updatePassword);
 
 module.exports = router;
