@@ -109,6 +109,7 @@ async function create(req, res) {
       include: [
         {
           model: Image,
+          as: "image",
           attributes: ["url"],
         },
       ],
@@ -127,9 +128,11 @@ async function create(req, res) {
   }
 }
 
-async function likePost(req, res) {
+async function likeUnlikePost(req, res) {
   try {
-    const { id } = req.params;
+    const { id, type } = req.params;
+
+    const likesArray = [];
 
     // Check if post does exist
     const post = await Post.findOne({
@@ -149,42 +152,185 @@ async function likePost(req, res) {
       });
     }
 
-    // Check if already like the post
-    const checkLike = await Like.count({
-      where: { postId: post.id, userId: req.user.id },
+    //Get likes
+    const likes = await Like.findAll({
+      where: { userId: req.user.id },
     });
 
-    if (checkLike == 0) {
-      // Save like
-      await Like.create({
-        postId: post.id,
-        userId: req.user.id,
+    //loop likes
+    likes.forEach((element) => {
+      likesArray.push(element.postId);
+    });
+
+    if (type == "like") {
+      const friend = await Friend.findOne({
+        where: { userId: post.userId, likeId: req.user.id, isMatched: false },
       });
-      const param = {
-        likes: post.likes + 1,
-      };
-      await Post.update(param, { where: { id } });
+
+      const user = await Friend.findOne({
+        where: { userId: req.user.id, likeId: post.userId, isMatched: false },
+      });
+      // Check if already like the post
+      if (!likesArray.includes(post.id)) {
+        console.log(!likesArray.includes(post.id));
+        // Save like
+        await Like.create({
+          postId: post.id,
+          userId: req.user.id,
+        });
+
+        // Save count
+        const param = {
+          likes: post.likes + 1,
+        };
+        await Post.update(param, { where: { id } });
+
+        if (friend) {
+          await Friend.update(
+            {
+              isMatched: true,
+            },
+            {
+              where: {
+                userId: post.userId,
+                likeId: req.user.id,
+                isMatched: false,
+              },
+            }
+          );
+          await Friend.create({
+            likeId: req.user.id,
+            userId: post.userId,
+            isMatched: true,
+          });
+
+          return res.status(200).json({
+            message: "Liked Post",
+            isMatch: true,
+          });
+        }
+
+        if (!user) {
+          await Friend.create({
+            likeId: req.user.id,
+            userId: post.userId,
+            isMatched: false,
+          });
+          return res.status(200).json({
+            message: "Liked Post",
+            isMatch: false,
+          });
+        }
+        return res.status(200).json({
+          message: "Post Liked",
+          isMatch: false,
+        });
+      }
+
+      return res.status(200).json({
+        message: "Already like post",
+        isMatch: false,
+      });
     }
 
-    if (checkLike > 0) {
-      // Become friend
-      await Friend.create({
-        userId: req.user.id,
-        posterId: post.userId,
+    if (type == "unlike") {
+      if (likesArray.includes(post.id)) {
+        // Save like
+        await Like.destroy({
+          where: { postId: post.id, userId: req.user.id },
+        });
+
+        // Save count
+        const param = {
+          likes: post.likes - 1,
+        };
+        var gg = await Post.update(param, { where: { id } });
+      }
+      return res.status(200).json({
+        message: "Unliked Post",
       });
     }
 
     return res.status(200).json({
-      message: "Post Liked",
-      data: post,
+      isMatch: false,
+    });
+
+    // const checkLike = await Like.count({
+    //   where: { postId: post.id, userId: req.user.id },
+    // });
+
+    // if (type == "like") {
+    //   if (checkLike == 0) {
+    //     // Save like
+    //     await Like.create({
+    //       postId: post.id,
+    //       userId: req.user.id,
+    //     });
+
+    //     const param = {
+    //       likes: post.likes + 1,
+    //     };
+
+    //     await Post.update(param, { where: { id } });
+    //   }
+    //   // const checkFriend = await Like.count({
+    //   //   where: { postId: post.id, userId: req.user.id },
+    //   // });
+    //   if (checkLike > 0) {
+    //     return res.status(200).json({
+    //       message: "Already Liked Post",
+    //       data: post,
+    //     });
+    //     // Become friend
+    //     await Friend.create({
+    //       userId: req.user.id,
+    //       posterId: post.userId,
+    //     });
+    //   }
+
+    //   return res.status(200).json({
+    //     message: "Post Liked",
+    //     data: post,
+    //   });
+    // }
+
+    // if (type == "unlike") {
+    //   if (checkLike > 0) {
+    //     await Like.destroy({
+    //       where: { postId: post.id, userId: req.user.id },
+    //     });
+    //   }
+
+    //   const friend = await Friend.count({
+    //     where: { userId: req.user.id, posterId: post.userId },
+    //   });
+
+    //   if (friend > 0) {
+    //     await Friend.destroy({
+    //       where: { userId: req.user.id, posterId: post.userId },
+    //     });
+    //     return res.status(200).json({
+    //       message: "Post Unliked and friend unmatched",
+    //       data: post,
+    //     });
+    //   }
+
+    //   return res.status(200).json({
+    //     message: "Post Unliked",
+    //     data: post,
+    //   });
+    // }
+
+    return res.status(200).json({
+      message: "",
     });
   } catch (error) {
     console.log(error);
     return res.status(400).json({
-      message: "An error occur when creating post like",
+      message: "An error occur",
       error: error.message,
     });
   }
 }
 
-module.exports = { create, getPosts, getPost, deletePost, likePost };
+module.exports = { create, getPosts, getPost, deletePost, likeUnlikePost };

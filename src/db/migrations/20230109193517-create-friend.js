@@ -11,9 +11,12 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
-      // posterId: {
-      //   type: Sequelize.INTEGER,
-      // },
+      likeId: {
+        type: Sequelize.INTEGER,
+      },
+      isMatched: {
+        type: Sequelize.BOOLEAN,
+      },
       roomId: {
         type: Sequelize.INTEGER,
       },
