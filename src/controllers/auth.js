@@ -1,8 +1,12 @@
+require("dotenv").config();
 const { User } = require("../db/sequelize");
 const config = require("../db/config/config.json");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const twilioVerify = require("../ultis/twilio/verifyPhone");
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require("twilio")(accountSid, authToken);
 
 async function hashIt(password) {
   const salt = await bcrypt.genSalt(6);
@@ -101,27 +105,30 @@ async function sendCode(req, res) {
 }
 
 async function verifyCode(req, res) {
-  try {
-    const { phone, code } = req.body;
-
-    const verifyCode = await twilioVerify.verifyCode(phone, code);
-
-    if (!verifyCode) {
+  const { phone, code } = req.body;
+  client.verify.v2
+    .services(process.env.TWILIO_SID)
+    .verificationChecks.create({ to: phone, code: code })
+    .then((result) => {
+      if (result.status == "approved") {
+        res.status(200).json({
+          message: "Code approved successfully",
+          response: result.status,
+        });
+      } else {
+        res.status(400).json({
+          message: "Verification not successfully",
+          response: result.status,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
       return res.status(400).json({
-        message: "Invalid Code",
+        message: "An error occur",
+        error: err.message,
       });
-    }
-
-    return res.status(200).json({
-      message: "Code Verified",
-      data: verifyCode,
     });
-  } catch (error) {
-    return res.status(400).json({
-      message: "An error occur",
-      error: error.message,
-    });
-  }
 }
 
 module.exports = { login, register, sendCode, verifyCode };

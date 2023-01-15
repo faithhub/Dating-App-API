@@ -16,9 +16,9 @@ async function sendCode(phone) {
 }
 
 async function verifyCode(phone, code) {
-  await client.verify.v2
-    .services(process.env.TWILIO_SID)
-    .verificationChecks.create({ to: phone, code: code });
+  // return await client.verify.v2
+  //   .services(process.env.TWILIO_SID)
+  //   .verificationChecks.create({ to: phone, code: code });
   // .then((verification_check) => {
   //   console.log(verification_check);
   // });
