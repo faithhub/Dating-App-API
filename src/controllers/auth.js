@@ -111,6 +111,7 @@ async function verifyCode(req, res) {
         message: "Invalid Code",
       });
     }
+
     return res.status(200).json({
       message: "Code Verified",
       data: verifyCode,

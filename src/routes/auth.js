@@ -15,6 +15,6 @@ router.route("/register").post(validateRegistration, auth.register);
 
 router.route("/sendCode").post(validatePhone, auth.sendCode);
 
-router.route("/verifyCode").get(validatePhone, validateCode, auth.verifyCode);
+router.route("/verifyCode").post(validatePhone, validateCode, auth.verifyCode);
 
 module.exports = router;

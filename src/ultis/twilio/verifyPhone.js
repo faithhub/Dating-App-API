@@ -16,12 +16,12 @@ async function sendCode(phone) {
 }
 
 async function verifyCode(phone, code) {
-  client.verify.v2
+  await client.verify.v2
     .services(process.env.TWILIO_SID)
-    .verificationChecks.create({ to: phone, code: code })
-    .then((verification_check) => {
-      console.log(verification_check);
-    });
+    .verificationChecks.create({ to: phone, code: code });
+  // .then((verification_check) => {
+  //   console.log(verification_check);
+  // });
 }
 
 module.exports = { sendCode, verifyCode };
