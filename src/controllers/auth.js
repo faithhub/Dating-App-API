@@ -81,7 +81,7 @@ async function register(req, res) {
   } catch (error) {
     return res.status(400).json({
       message: "An error occur",
-      error: error.message,
+      error: error,
     });
   }
 }
